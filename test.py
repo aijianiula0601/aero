@@ -52,7 +52,6 @@ def run(args):
     logger.info(f'LSD={lsd} , VISQOL={visqol}')
 
 
-
 def _main(args):
     global __file__
     print(args)

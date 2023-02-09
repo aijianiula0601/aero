@@ -155,6 +155,7 @@ class LrHrSet(Dataset):
         if self.with_path:
             return (lr_sig, lr_path), (hr_sig, hr_path)
         else:
+            #lr_sig_shape:[1,8000],hr_sig_shape:[1,32000]
             return lr_sig, hr_sig
 
     def __len__(self):

@@ -1,5 +1,5 @@
 # @package dset
 name: debug
-train:
+train: /mnt/cephfs/hjh/train_record/super_resolution/aero/dataset/vctk/json_16-24/tr
 valid:
-test:
+test: /mnt/cephfs/hjh/train_record/super_resolution/aero/dataset/vctk/json_16-24/val

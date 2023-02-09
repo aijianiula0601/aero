@@ -451,11 +451,8 @@ class Aero(nn.Module):
             logger.info(f'hdemucs in shape: {x.shape}')
 
 
-        print(f"----x:{x.size()}")
         z = self._spec(x)
-        print(f"-----z:{z.size()}")
         x = self._move_complex_to_channels_dim(z)
-        print(f"-----_move_complex_to_channels_dim_x:{x.size()}")
 
         if self.debug:
             logger.info(f'x spec shape: {x.shape}')

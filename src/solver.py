@@ -18,7 +18,7 @@ from src.ddp import distrib
 from src.data.datasets import PrHrSet, match_signal
 from src.enhance import enhance, save_wavs, save_specs
 from src.evaluate import evaluate, evaluate_on_saved_data
-from src.model_serializer import SERIALIZE_KEY_BEST_STATES, SERIALIZE_KEY_MODELS, SERIALIZE_KEY_OPTIMIZERS,  \
+from src.model_serializer import SERIALIZE_KEY_BEST_STATES, SERIALIZE_KEY_MODELS, SERIALIZE_KEY_OPTIMIZERS, \
     SERIALIZE_KEY_STATE, SERIALIZE_KEY_HISTORY, serialize
 from src.models.discriminators import discriminator_loss, feature_loss, generator_loss
 from src.models.stft_loss import MultiResolutionSTFTLoss
@@ -27,7 +27,6 @@ from src.wandb_logger import create_wandb_table
 from src.models.spec import spectro
 
 logger = logging.getLogger(__name__)
-
 
 GENERATOR_KEY = 'generator'
 
@@ -52,12 +51,10 @@ class Solver(object):
         self.model = self.models['generator']
         self.dmodel = self.dmodels['generator']
 
-
         self.optimizers = optimizers
         self.optimizer = optimizers['optimizer']
         if self.adversarial_mode:
             self.disc_optimizers = {'disc_optimizer': optimizers['disc_optimizer']}
-
 
         # Training config
         self.device = args.device
@@ -84,13 +81,13 @@ class Solver(object):
 
         if 'stft' in self.args.losses:
             self.mrstftloss = MultiResolutionSTFTLoss(factor_sc=args.stft_sc_factor,
-                                                  factor_mag=args.stft_mag_factor).to(self.device)
+                                                      factor_mag=args.stft_mag_factor).to(self.device)
 
         if 'discriminator_model' in self.args.experiment and \
                 self.args.experiment.discriminator_model == 'hifi':
             self.melspec_transform = torchaudio.transforms.MelSpectrogram(
-                                            self.args.experiment.hr_sr,
-                                            **self.args.experiment.mel_spectrogram).to(self.device)
+                self.args.experiment.hr_sr,
+                **self.args.experiment.mel_spectrogram).to(self.device)
 
         self._reset()
 
@@ -109,7 +106,6 @@ class Solver(object):
                 self.models[name].load_state_dict(model_package[SERIALIZE_KEY_STATE])
             for name, opt_package in package[SERIALIZE_KEY_OPTIMIZERS].items():
                 self.optimizers[name].load_state_dict(opt_package)
-
 
     def _reset(self):
         """_reset."""
@@ -131,7 +127,6 @@ class Solver(object):
             if keep_history:
                 self.history = package[SERIALIZE_KEY_HISTORY]
             self.best_states = package[SERIALIZE_KEY_BEST_STATES]
-
 
     def train(self):
         # Optimizing the model
@@ -169,7 +164,7 @@ class Solver(object):
 
             evaluated_on_test_data = False
 
-            if self.cross_valid and ((epoch + 1) % self.cross_valid_every == 0 or epoch == self.epochs - 1)\
+            if self.cross_valid and ((epoch + 1) % self.cross_valid_every == 0 or epoch == self.epochs - 1) \
                     and self.cv_loader:
                 # Cross validation
                 cross_valid_start = time.time()
@@ -179,9 +174,10 @@ class Solver(object):
                 with torch.no_grad():
                     # if valid test equals all of test data, then
                     if self.args.valid_equals_test:
-                        enhance_valid_data = (epoch + 1) % self.eval_every == 0 or epoch == self.epochs - 1 and self.tt_loader
+                        enhance_valid_data = (
+                                                     epoch + 1) % self.eval_every == 0 or epoch == self.epochs - 1 and self.tt_loader
                         valid_losses, enhanced_filenames = self._get_valid_losses_on_test_data(epoch,
-                                                                                       enhance=enhance_valid_data)
+                                                                                               enhance=enhance_valid_data)
                         evaluated_on_test_data = True
                     else:
                         valid_losses = self._run_one_epoch(epoch, cross_valid=True)
@@ -198,8 +194,6 @@ class Solver(object):
                     logger.info(bold('New best valid loss %.4f'), evaluation_loss)
                     self.best_states = self._copy_models_states()
                     # a bit weird that we don't save/load optimizers' best states. Should we?
-
-
 
             metrics = {**losses, **valid_losses}
 
@@ -232,13 +226,14 @@ class Solver(object):
                     if evaluated_on_test_data:
                         logger.info('Samples already evaluated in cross validation, calculating metrics.')
                         enhanced_dataset = PrHrSet(self.args.samples_dir, enhanced_filenames)
-                        enhanced_dataloader = distrib.loader(enhanced_dataset, batch_size=1, shuffle=False, num_workers=self.args.num_workers)
+                        enhanced_dataloader = distrib.loader(enhanced_dataset, batch_size=1, shuffle=False,
+                                                             num_workers=self.args.num_workers)
                         lsd, visqol = evaluate_on_saved_data(self.args, enhanced_dataloader, epoch)
                     elif self.args.joint_evaluate_and_enhance:
                         logger.info('Jointly evaluating and enhancing.')
                         lsd, visqol, enhanced_filenames = evaluate(self.args, self.tt_loader, epoch,
-                                                              self.model)
-                    else: # opposed to above cases, no spectrograms saved in samples directory.
+                                                                   self.model)
+                    else:  # opposed to above cases, no spectrograms saved in samples directory.
                         enhanced_filenames = enhance(self.tt_loader, self.model, self.args)
                         enhanced_dataset = PrHrSet(self.args.samples_dir, enhanced_filenames)
                         enhanced_dataloader = DataLoader(enhanced_dataset, batch_size=1, shuffle=False)
@@ -253,12 +248,9 @@ class Solver(object):
                         logger.info('logging results to wandb...')
                         create_wandb_table(self.args, enhanced_dataloader, epoch)
 
-
                     logger.info(bold(f'Evaluation Time {time.time() - evaluation_start:.2f}s'))
 
                 metrics.update({METRICS_KEY_LSD: lsd, METRICS_KEY_VISQOL: visqol})
-
-
 
             wandb.log(metrics, step=epoch)
             self.history.append(metrics)
@@ -272,7 +264,6 @@ class Solver(object):
                 if self.checkpoint:
                     serialize(self.models, self.optimizers, self.history, self.best_states, self.args)
                     logger.debug("Checkpoint saved to %s", self.checkpoint_file.resolve())
-
 
     def _run_one_epoch(self, epoch, cross_valid=False):
         total_losses = {}
@@ -424,7 +415,6 @@ class Solver(object):
 
         return avg_losses, total_filenames if enhance else None
 
-
     def _get_losses(self, hr, pr):
         hr_time = hr['time']
         pr_time = pr['time']
@@ -483,9 +473,7 @@ class Solver(object):
         total_loss_discriminator = self._get_melgan_discriminator_loss(discriminator_fake_detached, discriminator_real)
         generator_losses = self._get_melgan_generator_loss(discriminator_fake, discriminator_real)
 
-
         return generator_losses, total_loss_discriminator
-
 
     def _get_melgan_discriminator_loss(self, discriminator_fake, discriminator_real):
         discriminator_loss = 0
@@ -518,7 +506,6 @@ class Solver(object):
 
         return {'adversarial': adversarial_loss,
                 'features': self.args.experiment.features_loss_lambda * features_loss}
-
 
     def _get_hifi_adversarial_loss(self, pr, hr):
         mpd = self.dmodels['mpd']
@@ -553,7 +540,6 @@ class Solver(object):
 
         return total_loss_generator, total_loss_discriminator
 
-
     def _get_msd_adversarial_loss(self, pr, hr):
         msd = self.dmodels['msd_hifi']
 
@@ -566,7 +552,6 @@ class Solver(object):
         g_feat_loss = feature_loss(fmap_s_r, fmap_s_g)
         g_adv_loss = generator_loss(y_ds_hat_g)
 
-
         if 'only_adversarial_loss' in self.args.experiment and self.args.experiment.only_adversarial_loss:
             return {'adversarial': g_adv_loss}, d_loss
 
@@ -575,7 +560,6 @@ class Solver(object):
 
         return {'adversarial': g_adv_loss,
                 'features': self.args.experiment.features_loss_lambda * g_feat_loss}, d_loss
-
 
     def _get_mpd_adversarial_loss(self, pr, hr):
         mpd = self.dmodels['mpd']
@@ -597,7 +581,6 @@ class Solver(object):
 
         return {'adversarial': g_adv_loss,
                 'features': self.args.experiment.features_loss_lambda * g_feat_loss}, d_loss
-
 
     def _optimize(self, loss):
         self.optimizer.zero_grad()
