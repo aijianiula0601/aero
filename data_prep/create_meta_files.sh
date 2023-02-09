@@ -49,6 +49,18 @@ python data_prep/create_meta_files.py ${data_dir} ${save_json_dir} hr
 
 
 #--------------------------------
+# 16kHZ-24kHZ
+#--------------------------------
+data_dir="${base_dir}/rs_wav16k"
+save_json_dir="${base_dir}/json_16-24"
+json_name="lr"
+python data_prep/create_meta_files.py ${data_dir} ${save_json_dir} lr
+data_dir="${base_dir}/rs_wav24k"
+json_name="hr"
+python data_prep/create_meta_files.py ${data_dir} ${save_json_dir} hr
+
+
+#--------------------------------
 # 12kHZ-48kHZ
 #--------------------------------
 data_dir="${base_dir}/rs_wav12k"
