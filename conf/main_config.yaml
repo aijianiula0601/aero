@@ -77,10 +77,10 @@ world_size:
 # Hydra config
 hydra:
   sweep:
-    dir: ./outputs/${dset.name}/${experiment.name}
+    dir: /mnt/cephfs/hjh/train_record/super_resolution/aero/train_outputs/${dset.name}/${experiment.name}
     subdir: ${hydra.job.num}
   run:
-    dir: ./outputs/${dset.name}/${experiment.name}
+    dir: /mnt/cephfs/hjh/train_record/super_resolution/aero/train_outputs/${dset.name}/${experiment.name}
   job:
     config:
       # configuration for the ${hydra.job.override_dirname} runtime variable

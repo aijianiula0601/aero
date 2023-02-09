@@ -9,10 +9,10 @@ import json
 from multiprocessing import Process, Manager
 import pathlib
 
-FILE_PATTERN='*_mic1.wav'
-TOTAL_N_SPEAKERS=108
-TRAIN_N_SPEAKERS=100
-TEST_N_SPEAKERS=8
+FILE_PATTERN = '*.wav'
+TOTAL_N_SPEAKERS = 109
+TRAIN_N_SPEAKERS = 100
+TEST_N_SPEAKERS = 9
 
 Info = namedtuple("Info", ["length", "sample_rate", "channels"])
 
@@ -54,10 +54,11 @@ def create_subdirs_meta(subdirs_paths, n_samples_limit):
             meta = meta[:n_samples_limit]
         return meta
 
+
 def create_meta(data_dir, n_samples_limit=None):
     root, subdirs, files = next(os.walk(data_dir, topdown=True))
     subdirs.sort()
-    assert len(subdirs) == TOTAL_N_SPEAKERS
+    assert len(subdirs) == TOTAL_N_SPEAKERS, f"length of subdirs is :{len(subdirs)},n_speakers:{TOTAL_N_SPEAKERS}"
     train_subdirs_paths = [os.path.join(root, d) for d in subdirs[:TRAIN_N_SPEAKERS]]
     test_subdirs_paths = [os.path.join(root, d) for d in subdirs[TRAIN_N_SPEAKERS:]]
     assert len(test_subdirs_paths) == TEST_N_SPEAKERS
@@ -71,7 +72,6 @@ def create_meta(data_dir, n_samples_limit=None):
     return train_meta, test_meta
 
 
-
 def parse_args():
     parser = argparse.ArgumentParser(description='Resample data.')
     parser.add_argument('data_dir', help='directory containing source files')
@@ -81,10 +81,11 @@ def parse_args():
     return parser.parse_args()
 
 
-
 """
 usage: python data_prep/create_meta_file.py <data_dir_path> <target_dir> <json_filename>
 """
+
+
 def main():
     args = parse_args()
     print(args)
@@ -92,7 +93,6 @@ def main():
     os.makedirs(args.target_dir, exist_ok=True)
     os.makedirs(os.path.join(args.target_dir, 'tr'), exist_ok=True)
     os.makedirs(os.path.join(args.target_dir, 'val'), exist_ok=True)
-
 
     train_meta, test_meta = create_meta(args.data_dir, args.n_samples_limit)
 

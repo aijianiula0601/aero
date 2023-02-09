@@ -5,6 +5,7 @@ import itertools
 import logging
 import os
 import shutil
+import setproctitle
 
 import hydra
 import wandb
@@ -131,6 +132,7 @@ def _main(args):
 
 @hydra.main(config_path="conf", config_name="main_config")  # for latest version of hydra=1.0
 def main(args):
+    setproctitle.setproctitle(f"aero_sr_{args.dset.name}_{args.experiment.name}")
     try:
         _main(args)
     except Exception:
