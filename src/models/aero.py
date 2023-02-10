@@ -464,6 +464,9 @@ class Aero(nn.Module):
         std = x.std(dim=(1, 2, 3), keepdim=True)
         x = (x - mean) / (1e-5 + std)
 
+
+        print(f"------encoder_x:{x.size()}")
+
         # okay, this is a giant mess I know...
         saved = []  # skip connections, freq.
         lengths = []  # saved lengths to properly remove padding, freq branch.
@@ -497,6 +500,8 @@ class Aero(nn.Module):
 
         x = x.view(B, self.out_channels, -1, Fq, T)
         x = x * std[:, None] + mean[:, None]
+
+        print(f"------decoder_x:{x.size()}")
 
         if self.debug:
             logger.info(f'post view shape: {x.shape}')
