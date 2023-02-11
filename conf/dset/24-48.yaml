@@ -1,0 +1,5 @@
+# @package dset
+name: 24-48
+train: /mnt/cephfs/hjh/train_record/super_resolution/aero/dataset/vctk/json_24-48/tr
+valid:
+test: /mnt/cephfs/hjh/train_record/super_resolution/aero/dataset/vctk/json_24-48/val

@@ -10,8 +10,8 @@ cd ../../
 
 
 
-CUDA_VISIBLE_DEVICES=0 \
-python train.py dset=4-16 experiment=aero_4-16_512_256 ddp=true
+CUDA_VISIBLE_DEVICES=4,5 \
+python train.py dset=16-48 experiment=aero_16-48_512_256 ddp=true
 
 
 
