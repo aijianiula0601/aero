@@ -89,3 +89,15 @@ python data_prep/create_meta_files.py ${data_dir} ${save_json_dir} lr
 data_dir="${base_dir}/wav48"
 json_name="hr"
 python data_prep/create_meta_files.py ${data_dir} ${save_json_dir} hr
+
+
+#--------------------------------
+# 24kHZ-44kHZ
+#--------------------------------
+data_dir="${base_dir}/rs_wav24k"
+save_json_dir="${base_dir}/json_24-44"
+json_name="lr"
+python data_prep/create_meta_files.py ${data_dir} ${save_json_dir} lr
+data_dir="${base_dir}/rs_wav44k"
+json_name="hr"
+python data_prep/create_meta_files.py ${data_dir} ${save_json_dir} hr

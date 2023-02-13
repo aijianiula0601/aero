@@ -1,0 +1,5 @@
+# @package dset
+name: 16-24-vctk-musdb
+train: /mnt/cephfs/hjh/train_record/super_resolution/aero/dataset/combine_vctk_musdb18-hq_json/json_16-24/tr
+valid:
+test: /mnt/cephfs/hjh/train_record/super_resolution/aero/dataset/combine_vctk_musdb18-hq_json/json_16-24/val

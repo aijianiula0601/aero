@@ -5,6 +5,7 @@ This code is based on Facebook's HDemucs code: https://github.com/facebookresear
 import json
 import logging
 import os
+import math
 
 import torch
 from tqdm import tqdm
@@ -131,6 +132,8 @@ class LrHrSet(Dataset):
                                with_path=with_path)
         self.hr_set = Audioset(hr, sample_rate=hr_sr, length=hr_length, stride=hr_stride, pad=pad, channels=1,
                                with_path=with_path)
+
+        logger.info(f"hr_set nums:{len(self.hr_set)},lr_set nums:{len(self.lr_set)}")
         assert len(self.hr_set) == len(self.lr_set)
 
     def __getitem__(self, index):
@@ -155,7 +158,7 @@ class LrHrSet(Dataset):
         if self.with_path:
             return (lr_sig, lr_path), (hr_sig, hr_path)
         else:
-            #lr_sig_shape:[1,8000],hr_sig_shape:[1,32000]
+            # lr_sig_shape:[1,8000],hr_sig_shape:[1,32000]
             return lr_sig, hr_sig
 
     def __len__(self):

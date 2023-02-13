@@ -8,7 +8,7 @@ from multiprocessing import Pool
 def resample_subdir(data_dir, data_subdir, out_dir, target_sr):
     print(f'resampling {data_subdir}')
     tfm = sox.Transformer()
-    tfm.set_output_format(rate=target_sr)
+    tfm.set_output_format(rate=target_sr, channels=1)  # 两声道的合并为1声道
     out_sub_dir = os.path.join(out_dir, data_subdir)
     if not os.path.isdir(out_sub_dir):
         os.makedirs(out_sub_dir)
