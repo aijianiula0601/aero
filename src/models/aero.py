@@ -11,6 +11,7 @@ from src.models.spec import spectro, ispectro
 from src.models.modules import DConv, ScaledEmbedding, FTB
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -450,7 +451,6 @@ class Aero(nn.Module):
         if self.debug:
             logger.info(f'hdemucs in shape: {x.shape}')
 
-
         z = self._spec(x)
         x = self._move_complex_to_channels_dim(z)
 
@@ -463,9 +463,6 @@ class Aero(nn.Module):
         mean = x.mean(dim=(1, 2, 3), keepdim=True)
         std = x.std(dim=(1, 2, 3), keepdim=True)
         x = (x - mean) / (1e-5 + std)
-
-
-        print(f"------encoder_x:{x.size()}")
 
         # okay, this is a giant mess I know...
         saved = []  # skip connections, freq.
@@ -500,8 +497,6 @@ class Aero(nn.Module):
 
         x = x.view(B, self.out_channels, -1, Fq, T)
         x = x * std[:, None] + mean[:, None]
-
-        print(f"------decoder_x:{x.size()}")
 
         if self.debug:
             logger.info(f'post view shape: {x.shape}')
