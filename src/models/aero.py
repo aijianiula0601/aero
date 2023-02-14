@@ -523,3 +523,11 @@ class Aero(nn.Module):
                 return x, x_spec_complex
 
         return x
+
+    def calculate_parameter(self):
+        print("-" * 43, 'paramerters', '-' * 44)
+        print(f"encoder: {sum(x.numel() for x in self.encoder.parameters())}")
+        print(f"decoder: {sum(x.numel() for x in self.decoder.parameters())}")
+        print()
+        print(f"total: {sum(x.numel() for x in self.parameters())}")
+        print("-" * 100)
